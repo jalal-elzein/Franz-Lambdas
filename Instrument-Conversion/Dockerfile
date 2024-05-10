@@ -33,7 +33,6 @@ RUN apt-get update && apt-get install -y tzdata \
 RUN apt-get update && apt-get install -y software-properties-common
 
 # Install required dependencies
-# Install required dependencies
 RUN apt-get update && apt-get install -y \
     libasound2 \
     libfreetype6 \
