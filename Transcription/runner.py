@@ -2,10 +2,11 @@ import os
 from urllib.parse import unquote_plus
 import time
 import datetime
+import pickle
 
 import librosa
 import note_seq
-from music21 import converter, metadata
+from music21 import converter, metadata, environment
 import nest_asyncio
 import pandas as pd
 
@@ -22,8 +23,15 @@ MODEL_NAME = os.environ.get("MODEL_NAME", "mt3")
 GENERATED_OUTPUTS_LOCAL_DIR = os.environ.get("GENERATED_OUTPUTS_LOCAL_DIR", "output")
 DELIMITER = os.environ.get("DELIMITER", "::")
 DYNAMO_TABLE_NAME = os.environ.get("DYNAMO_TABLE_NAME", "Transcriptions")
+NS_FILENAME = os.environ.get("note_sequence.pkl", "NS_FILENAME")
+MIDI_FILENAME = os.environ.get("result.mid", "MIDI_FILENAME")
+PDF_FILENAME = os.environ.get("result.pdf", "PDF_FILENAME")
 
 MIDI_PROGRAM_MAPPING = get_midi_program_mapping()
+
+us = environment.UserSettings()
+us['musescoreDirectPNGPath'] = '/usr/bin/mscore'
+us['directoryScratch'] = '/tmp'
 
 
 def get_program_grouping(est_notes):
@@ -111,16 +119,19 @@ def discard_classes(noteseq):
     return new_ns
 
 
-def note_seq_to_pdf(note_seq_x, output_dir, title):
+def note_seq_to_pdf(note_seq_x, output_dir, title=""):
     # Create output directory if it doesn't exist
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     # NoteSequence -> MIDI
     note_seq.sequence_proto_to_midi_file(
-        note_seq_x, os.path.join(output_dir, "result.mid")
+        note_seq_x, os.path.join(output_dir, MIDI_FILENAME)
     )
+    # NoteSequence -> Pickle
+    with open(os.path.join(output_dir, NS_FILENAME), 'wb') as f:
+        pickle.dump(note_seq_x, f)
     # MIDI -> MIDI Stream
-    midi_stream = converter.parse(os.path.join(output_dir, "result.mid"))
+    midi_stream = converter.parse(os.path.join(output_dir, MIDI_FILENAME))
     # Edit Stream Metadata
     if len(midi_stream.parts) == 1:
         midi_stream.parts[0].partName = MIDI_PROGRAM_MAPPING[
@@ -133,7 +144,7 @@ def note_seq_to_pdf(note_seq_x, output_dir, title):
     # MIDI Stream -> PDF & MusicXML
     midi_stream.write(
         "musicxml.pdf",
-        os.path.join(output_dir, "result.pdf"),
+        os.path.join(output_dir, PDF_FILENAME),
         makeNotation=True,
         metadata=metadata_x,
         MetaSpec_instrument_name=True,
@@ -150,7 +161,8 @@ def note_seq_to_pdf_separated(noteseq_x, output_dir):
         for note in notes:
             temp_ns.notes.append(note)
         note_seq_to_pdf(
-            temp_ns, os.path.join(output_dir, str(mapping[program]["instrument"])), ""
+            temp_ns, 
+            os.path.join(output_dir, str(mapping[program]["instrument"]))
         )
 
 
@@ -220,12 +232,21 @@ def lambda_handler(event, context):
         # convert to PDF
         print(">> Generating outputs...")
         note_seq_to_pdf_separated(
-            ns_with_discarded_classes, GENERATED_OUTPUTS_LOCAL_DIR
+            ns_with_discarded_classes, 
+            GENERATED_OUTPUTS_LOCAL_DIR
+        )
+        note_seq_to_pdf(
+            ns_with_discarded_classes,
+            GENERATED_OUTPUTS_LOCAL_DIR,
         )
 
         # upload outputs to S3
         print(">> Uploading outputs to S3 bucket...")
-        upload_folder_to_s3(GENERATED_OUTPUTS_LOCAL_DIR, OUTPUT_BUCKET_NAME, prefix)
+        upload_folder_to_s3(
+            GENERATED_OUTPUTS_LOCAL_DIR, 
+            OUTPUT_BUCKET_NAME, 
+            prefix
+        )
 
         # write to dynamo
         write_to_dynamo(
