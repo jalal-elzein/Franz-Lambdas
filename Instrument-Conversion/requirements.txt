@@ -1,0 +1,4 @@
+boto3
+note_seq
+music21
+awslambdaric
