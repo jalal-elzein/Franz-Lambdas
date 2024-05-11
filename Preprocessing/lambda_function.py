@@ -79,5 +79,5 @@ def lambda_handler(event, context):
     upload_audio_file(
         output_audio_filename, 
         OUTPUT_BUCKET,
-        prefix   
+        os.path.join(prefix, filename)
     )
