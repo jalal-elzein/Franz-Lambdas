@@ -65,7 +65,7 @@ RUN apt-get update && apt-get install -y \
 
 # Add the repository and install musescore
 RUN apt-get update && apt-get install -y curl \
-    && curl -L http://ftp.uk.debian.org/debian/pool/main/m/musescore2/musescore_2.3.2+dfsg4-15_amd64.deb -o musescore.deb \
+    && curl -L http://ftp.uk.debian.org/debian/pool/main/m/musescore2/musescore_2.3.2+dfsg4-15_arm64.deb -o musescore.deb \
     && dpkg -i musescore.deb \
     && apt-get install -f -y \
     && rm musescore.deb \
