@@ -6,12 +6,15 @@ FROM python:3.10 as build-image
 # Include global arg in this stage of the build
 ARG FUNCTION_DIR
 
-# Copy function code
-RUN mkdir -p ${FUNCTION_DIR}
-COPY . ${FUNCTION_DIR}
+# Copy only the requirements file
+COPY ./requirements.txt ${FUNCTION_DIR}/requirements.txt
 
 # Install the function's dependencies
 RUN pip install -r ${FUNCTION_DIR}/requirements.txt --target ${FUNCTION_DIR}
+
+# Copy function code
+RUN mkdir -p ${FUNCTION_DIR}
+COPY . ${FUNCTION_DIR}
 
 # Use a slim version of the base Python image to reduce the final image size
 FROM python:3.10-slim
@@ -70,6 +73,10 @@ RUN apt-get update && apt-get install -y curl \
     && apt-get install -f -y \
     && rm musescore.deb \
     && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && \
+    apt-get install -y xvfb && \
+    rm -rf /var/lib/apt/lists/*
 
 # Set runtime interface client as default command for the container runtime
 ENTRYPOINT [ "/usr/local/bin/python", "-m", "awslambdaric" ]
