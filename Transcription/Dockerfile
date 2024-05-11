@@ -102,7 +102,7 @@ RUN apt-get update && \
 COPY . .
 
 # Set runtime interface client as default command for the container runtime
-ENTRYPOINT ["/usr/local/bin/python", "-m", "awslambdaric"]
+ENTRYPOINT [ "/usr/local/bin/python", "-m", "awslambdaric" ]
 
 # Point to Lambda function handler
 CMD [ "runner.lambda_handler" ]

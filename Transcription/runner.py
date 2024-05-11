@@ -23,9 +23,9 @@ MODEL_NAME = os.environ.get("MODEL_NAME", "mt3")
 GENERATED_OUTPUTS_LOCAL_DIR = os.environ.get("GENERATED_OUTPUTS_LOCAL_DIR", "output")
 DELIMITER = os.environ.get("DELIMITER", "::")
 DYNAMO_TABLE_NAME = os.environ.get("DYNAMO_TABLE_NAME", "Transcriptions")
-NS_FILENAME = os.environ.get("note_sequence.pkl", "NS_FILENAME")
-MIDI_FILENAME = os.environ.get("result.mid", "MIDI_FILENAME")
-PDF_FILENAME = os.environ.get("result.pdf", "PDF_FILENAME")
+NS_FILENAME = os.environ.get("NS_FILENAME", "note_sequence.pkl")
+MIDI_FILENAME = os.environ.get("MIDI_FILENAME", "result.mid")
+PDF_FILENAME = os.environ.get("PDF_FILENAME", "result.pdf")
 
 MIDI_PROGRAM_MAPPING = get_midi_program_mapping()
 
