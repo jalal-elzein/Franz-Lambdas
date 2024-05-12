@@ -15,8 +15,8 @@ RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 # RUN pip install --no-cache-dir jax[cuda11_local] nest-asyncio pyfluidsynth==1.3.0 -e . -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
 RUN pip install --no-cache-dir jax[cuda11_local] nest-asyncio pyfluidsynth==1.3.0 -f https://storage.googleapis.com/jax-releases/
-RUN pip install git+https://github.com/jalal-elzein/t5x.git@6b02d25cd67a397c6cfffe90ad2cca4b343535ae#egg=t5x
-RUN pip install music21 awslambdaric
+RUN pip install --no-cache-dir git+https://github.com/jalal-elzein/t5x.git@6b02d25cd67a397c6cfffe90ad2cca4b343535ae#egg=t5x
+RUN pip install --no-cache-dir music21 awslambdaric
 
 # Final stage
 FROM python:3.10-slim AS final
@@ -51,6 +51,11 @@ RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.
 
 # Download files from Google Cloud Storage
 RUN gsutil -q -m cp -r gs://mt3/checkpoints .
+
+# Sync time
+RUN apt-get update && apt-get install -y tzdata \
+    && dpkg-reconfigure tzdata \
+    && apt-get install -y curl 
 
 # Install required packages for adding repositories
 RUN apt-get update && apt-get install -y software-properties-common
