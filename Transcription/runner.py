@@ -33,6 +33,8 @@ us = environment.UserSettings()
 us['musescoreDirectPNGPath'] = '/usr/bin/mscore'
 us['directoryScratch'] = '/tmp'
 
+os.environ["QT_QPA_PLATFORM"] = "offscreen"
+
 
 def get_program_grouping(est_notes):
     n_program_ns = {}
@@ -198,7 +200,7 @@ def lambda_handler(event, context):
     # construct the path to the audio file
     if not os.path.exists(INPUT_LOCAL_DIR_NAME):
         os.makedirs(INPUT_LOCAL_DIR_NAME)
-    audio_file_path = os.path.join(INPUT_LOCAL_DIR_NAME, os.path.basename(key))
+    audio_file_path = os.path.join(INPUT_LOCAL_DIR_NAME, os.path.basename(key)) # 'input/file.mp3'
 
     try:
         # Download the audio file from the S3 bucket
@@ -252,7 +254,9 @@ def lambda_handler(event, context):
         write_to_dynamo(
             DYNAMO_TABLE_NAME,
             generate_dynamo_transcription_row(
-                prefix=prefix, delimiter=DELIMITER, bucket_name=OUTPUT_BUCKET_NAME
+                prefix=prefix, 
+                delimiter=DELIMITER, 
+                bucket_name=OUTPUT_BUCKET_NAME
             ),
         )
     except Exception as e:

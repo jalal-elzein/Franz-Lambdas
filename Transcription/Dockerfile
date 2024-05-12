@@ -13,7 +13,7 @@ RUN apt-get update && \
 # Create a virtual environment and install Python packages
 RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
-# RUN pip install --no-cache-dir jax[cuda11_local] nest-asyncio pyfluidsynth==1.3.0 -e . -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+RUN pip install --upgrade pip
 RUN pip install --no-cache-dir jax[cuda11_local] nest-asyncio pyfluidsynth==1.3.0 -f https://storage.googleapis.com/jax-releases/
 RUN pip install --no-cache-dir git+https://github.com/jalal-elzein/t5x.git@6b02d25cd67a397c6cfffe90ad2cca4b343535ae#egg=t5x
 RUN pip install --no-cache-dir music21 awslambdaric
@@ -103,6 +103,9 @@ RUN apt-get update && apt-get install -y curl \
 RUN apt-get update && \
     apt-get install -y xvfb && \
     rm -rf /var/lib/apt/lists/*
+
+RUN pip install awslambdaric
+RUN python -c "import awslambdaric; print('awslambdaric module is installed')" 
 
 COPY . .
 
