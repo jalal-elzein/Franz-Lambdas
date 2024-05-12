@@ -10,7 +10,7 @@ ARG FUNCTION_DIR
 COPY ./requirements.txt ${FUNCTION_DIR}/requirements.txt
 
 # Install the function's dependencies
-RUN pip install -r ${FUNCTION_DIR}/requirements.txt --target ${FUNCTION_DIR}
+RUN pip install --no-cache-dir -r ${FUNCTION_DIR}/requirements.txt --target ${FUNCTION_DIR}
 
 # Copy function code
 RUN mkdir -p ${FUNCTION_DIR}

@@ -21,6 +21,8 @@ us = environment.UserSettings()
 us['musescoreDirectPNGPath'] = '/usr/bin/mscore'
 us['directoryScratch'] = '/tmp'
 
+os.environ["QT_QPA_PLATFORM"] = "offscreen"
+
 
 def get_program_by_name(name):
     mapping = PROGRAM_MAPPING
