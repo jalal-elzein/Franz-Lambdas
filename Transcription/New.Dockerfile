@@ -14,6 +14,16 @@ RUN pip install --no-cache-dir --target ${FUNCTION_DIR} git+https://github.com/j
 RUN pip install --no-cache-dir --target ${FUNCTION_DIR} music21
 RUN pip install --no-cache-dir --target ${FUNCTION_DIR} awslambdaric
 
+# Install Google Cloud SDK and gsutil
+RUN apt-get update && apt-get install -y gnupg curl && rm -rf /var/lib/apt/lists/*
+RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - && \
+    apt-get update && \
+    apt-get install -y google-cloud-sdk && \
+    rm -rf /var/lib/apt/lists/*
+# Download files from Google Cloud Storage
+RUN gsutil -q -m cp -r gs://mt3/checkpoints ${FUNCTION_DIR}
+
 # create new image 
 FROM python:3.10-slim AS final
 ARG FUNCTION_DIR
@@ -34,17 +44,6 @@ RUN apt-get update && \
 # Download MT3 codebase
 RUN git clone --branch=main https://github.com/magenta/mt3
 RUN mv mt3 mt3_tmp; mv mt3_tmp/* .; rm -r mt3_tmp
-
-# Install Google Cloud SDK and gsutil
-RUN apt-get update && apt-get install -y gnupg curl && rm -rf /var/lib/apt/lists/*
-RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
-    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - && \
-    apt-get update && \
-    apt-get install -y google-cloud-sdk && \
-    rm -rf /var/lib/apt/lists/*
-
-# Download files from Google Cloud Storage
-RUN gsutil -q -m cp -r gs://mt3/checkpoints .
 
 # Sync time
 RUN apt-get update && apt-get install -y tzdata \
