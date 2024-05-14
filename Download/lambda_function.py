@@ -22,9 +22,11 @@ def lambda_handler(event, context):
     try:
         timestamp = int(time())
         print(f">> Request UNIX timestamp: {timestamp}")
+
         if not os.path.exists(LOCAL_OUTPUT_FOLDER):
             os.makedirs(LOCAL_OUTPUT_FOLDER)
             print(">> Created local output directory")
+
         request_body = event
         youtube_link = request_body['queryStringParameters']['url']
         username = request_body['queryStringParameters']['username']
@@ -32,12 +34,14 @@ def lambda_handler(event, context):
         print(f"youtube_link: {youtube_link}")
         print(f"username: {username}")
         print(f"song_title: {song_title}")
+
         # download
         print(">> Downloading audio...")
         download_response = download_audio(youtube_link)
         print(download_response)
         print(f">> Forcing type: {target_file_type}")
         force_type(LOCAL_OUTPUT_FOLDER, target_file_type)
+
         # put on s3
         # {bucket_name}/{username}/{song_title}-{timestamp}/{file_name}
         print(">> Uploading outputs to S3")
@@ -47,6 +51,7 @@ def lambda_handler(event, context):
             local_directory=LOCAL_OUTPUT_FOLDER,
             xtype=target_file_type
         )
+        
         return {
             'statusCode': 200,
             'body': json.dumps(upload_response),
