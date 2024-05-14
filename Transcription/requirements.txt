@@ -1,0 +1,18 @@
+# mt3 requirements
+absl-py
+gin-config
+immutabledict
+librosa
+mir_eval
+note_seq
+numpy
+scikit-learn
+scipy
+seqio
+t5
+tensorflow-datasets
+nest_asyncio
+pandas
+
+music21
+awslambdaric
