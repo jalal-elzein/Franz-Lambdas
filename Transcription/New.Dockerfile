@@ -9,7 +9,6 @@ RUN mkdir -p ${FUNCTION_DIR}
 COPY aws_helpers.py ${FUNCTION_DIR}
 COPY midi_program_mapping.py ${FUNCTION_DIR}
 COPY model.py ${FUNCTION_DIR}
-COPY requirements.txt ${FUNCTION_DIR}
 COPY runner.py ${FUNCTION_DIR}
 COPY SGM-v2.01-Sal-Guit-Bass-V1.3.sf2 ${FUNCTION_DIR}
 
@@ -18,7 +17,6 @@ COPY SGM-v2.01-Sal-Guit-Bass-V1.3.sf2 ${FUNCTION_DIR}
 RUN pip install --no-cache-dir --target ${FUNCTION_DIR} jax[cuda11_local] nest-asyncio pyfluidsynth==1.3.0 -f https://storage.googleapis.com/jax-releases/
 RUN pip install --no-cache-dir --target ${FUNCTION_DIR} git+https://github.com/jalal-elzein/t5x.git@6b02d25cd67a397c6cfffe90ad2cca4b343535ae#egg=t5x
 RUN pip install --no-cache-dir --target ${FUNCTION_DIR} git+https://github.com/google/flax#egg=flax
-RUN pip install --no-cache-dir -r ${FUNCTION_DIR}/requirements.txt --target ${FUNCTION_DIR}
 RUN pip install --no-cache-dir --target ${FUNCTION_DIR} boto3
 
 # Install Google Cloud SDK and gsutil
@@ -30,6 +28,9 @@ RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.
     rm -rf /var/lib/apt/lists/*
 # Download files from Google Cloud Storage
 RUN gsutil -m cp -r gs://mt3/checkpoints ${FUNCTION_DIR}
+
+COPY requirements.txt ${FUNCTION_DIR}
+RUN pip install --no-cache-dir -r ${FUNCTION_DIR}/requirements.txt --target ${FUNCTION_DIR}
 
 # create new image 
 FROM python:3.10-slim AS final

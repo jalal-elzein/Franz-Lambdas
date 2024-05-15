@@ -16,4 +16,3 @@ pandas
 
 music21
 awslambdaric
-soundfile

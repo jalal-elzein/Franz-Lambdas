@@ -227,13 +227,13 @@ def lambda_handler(event, context):
 
         # load audio
         print(">> Loading input audio...")
-        # audio, sample_rate = librosa.load(audio_file_path)
+        audio, sample_rate = librosa.load(audio_file_path)
         # audio = None
         # with open(audio_file_path, 'rb') as audio_f:
         #     audio_bytes = audio_f.read()
         #     audio = note_seq.audio_io.wav_data_to_samples_librosa(audio_bytes, sample_rate=SAMPLE_RATE)
         # Load audio file
-        audio, samplerate = sf.read(audio_file_path)
+        # audio, samplerate = sf.read(audio_file_path)
         # assert sample_rate == 16000  # TODO: do we need to assert, what happens if it's more/less than 16k
 
         # run transcription
