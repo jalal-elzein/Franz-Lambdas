@@ -29,7 +29,7 @@ RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.
     apt-get install -y google-cloud-sdk && \
     rm -rf /var/lib/apt/lists/*
 # Download files from Google Cloud Storage
-RUN gsutil -q -m cp -r gs://mt3/checkpoints ${FUNCTION_DIR}
+RUN gsutil -m cp -r gs://mt3/checkpoints ${FUNCTION_DIR}
 
 # create new image 
 FROM python:3.10-slim AS final
