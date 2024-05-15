@@ -27,6 +27,7 @@ NS_FILENAME = os.environ.get("NS_FILENAME", "note_sequence.pkl")
 MIDI_FILENAME = os.environ.get("MIDI_FILENAME", "result.mid")
 PDF_FILENAME = os.environ.get("PDF_FILENAME", "result.pdf")
 DISPLAY_CONTENT_DIRECTORY = os.environ.get("DISPLAY_CONTENT_DIRECTORY", "/tmp/function/")
+SAMPLE_RATE = os.environ.get("SAMPLE_RATE", 16000)
 
 MIDI_PROGRAM_MAPPING = get_midi_program_mapping()
 
@@ -224,7 +225,11 @@ def lambda_handler(event, context):
 
         # load audio
         print(">> Loading input audio...")
-        audio, sample_rate = librosa.load(audio_file_path)
+        # audio, sample_rate = librosa.load(audio_file_path)
+        audio = None
+        with open(audio_file_path, 'rb') as audio_f:
+            audio_bytes = audio_f.read()
+            audio = note_seq.audio_io.wav_data_to_samples_librosa(audio_bytes, sample_rate=SAMPLE_RATE)
         # assert sample_rate == 16000  # TODO: do we need to assert, what happens if it's more/less than 16k
 
         # run transcription
