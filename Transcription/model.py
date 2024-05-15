@@ -1,4 +1,5 @@
 import functools
+import os
 
 import t5x
 import seqio
@@ -15,6 +16,9 @@ from mt3 import network
 from mt3 import models
 from mt3 import metrics_utils
 from mt3 import preprocessors
+
+MODEL_GIN_FILEPATH = os.environ.get("MODEL_GIN_FILEPATH", "/mt3/gin/model.gin")
+MODEL_TYPE_GIN_FILEPATH = os.environ.get("MODEL_GIN_FILEPATH", "/mt3/gin/{model_type}.gin")
 
 class InferenceModel(object):
     """Wrapper of T5X model for music transcription."""
@@ -33,7 +37,7 @@ class InferenceModel(object):
         else:
             raise ValueError("unknown model_type: %s" % model_type)
 
-        gin_files = ["/mt3/gin/model.gin", f"/mt3/gin/{model_type}.gin"]
+        gin_files = [MODEL_GIN_FILEPATH, MODEL_TYPE_GIN_FILEPATH.format(model_type)]
 
         self.batch_size = 8
         self.outputs_length = 1024

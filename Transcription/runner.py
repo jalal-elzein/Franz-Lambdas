@@ -16,16 +16,17 @@ from midi_program_mapping import get_midi_program_mapping
 
 nest_asyncio.apply()
 
+INPUT_LOCAL_DIR_NAME = os.environ.get("INPUT_LOCAL_DIR_NAME", "/tmp/input")
+GENERATED_OUTPUTS_LOCAL_DIR = os.environ.get("GENERATED_OUTPUTS_LOCAL_DIR", "/tmp/output")
 OUTPUT_BUCKET_NAME = os.environ.get("OUTPUT_BUCKET_NAME", "audio-transcribed-1")
-INPUT_LOCAL_DIR_NAME = os.environ.get("INPUT_LOCAL_DIR_NAME", "input")
 MODEL_CHECKPOINT_PATH = os.environ.get("MODEL_CHECKPOINT_PATH", "checkpoints/mt3/")
 MODEL_NAME = os.environ.get("MODEL_NAME", "mt3")
-GENERATED_OUTPUTS_LOCAL_DIR = os.environ.get("GENERATED_OUTPUTS_LOCAL_DIR", "output")
 DELIMITER = os.environ.get("DELIMITER", "::")
 DYNAMO_TABLE_NAME = os.environ.get("DYNAMO_TABLE_NAME", "Transcriptions")
 NS_FILENAME = os.environ.get("NS_FILENAME", "note_sequence.pkl")
 MIDI_FILENAME = os.environ.get("MIDI_FILENAME", "result.mid")
 PDF_FILENAME = os.environ.get("PDF_FILENAME", "result.pdf")
+DISPLAY_CONTENT_DIRECTORY = os.environ.get("DISPLAY_CONTENT_DIRECTORY", "/tmp/function/")
 
 MIDI_PROGRAM_MAPPING = get_midi_program_mapping()
 
@@ -184,6 +185,13 @@ def generate_dynamo_transcription_row(prefix, delimiter, bucket_name, metadata={
         "s3_uri": f"s3://{bucket_name}/{acc_id}/{title}",
     }
 
+def display_contents(directory):
+    print(os.getcwd())
+    print(os.listdir())
+    for root, _, files in os.walk(directory):
+        for file in files:
+            print(os.path.join(root, file))
+
 
 def lambda_handler(event, context):
     # get  bucket name and key (file path) from the event
@@ -206,6 +214,9 @@ def lambda_handler(event, context):
         # Download the audio file from the S3 bucket
         print(">> Downloading input audio...")
         download_audio_file(bucket_name, key, audio_file_path)
+
+        # Check system storage hierarchy
+        display_contents(DISPLAY_CONTENT_DIRECTORY)
 
         # load model
         print(">> Creating model...")
