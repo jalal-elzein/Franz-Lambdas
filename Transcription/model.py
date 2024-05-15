@@ -33,7 +33,7 @@ class InferenceModel(object):
         else:
             raise ValueError("unknown model_type: %s" % model_type)
 
-        gin_files = ["/content/mt3/gin/model.gin", f"/content/mt3/gin/{model_type}.gin"]
+        gin_files = ["/mt3/gin/model.gin", f"/mt3/gin/{model_type}.gin"]
 
         self.batch_size = 8
         self.outputs_length = 1024
