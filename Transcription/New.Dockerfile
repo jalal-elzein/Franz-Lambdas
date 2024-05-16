@@ -9,7 +9,7 @@ RUN mkdir -p ${FUNCTION_DIR}
 COPY aws_helpers.py ${FUNCTION_DIR}
 COPY midi_program_mapping.py ${FUNCTION_DIR}
 COPY model.py ${FUNCTION_DIR}
-COPY runner.py ${FUNCTION_DIR}!gsutil -q -m cp gs://magentadata/soundfonts/SGM-v2.01-Sal-Guit-Bass-V1.3.sf2 .
+COPY runner.py ${FUNCTION_DIR}
 
 
 # install pip requirements to function_dir 
