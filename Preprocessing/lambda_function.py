@@ -38,13 +38,6 @@ def upload_audio_file(local_filepath, bucket_name, key):
         print(f">> Error uploading audio file to S3: {e}")
         raise e
 
-def display_contents(directory):
-    print(os.getcwd())
-    print(os.listdir())
-    for root, _, files in os.walk(directory):
-        for file in files:
-            print(os.path.join(root, file))
-
 
 def lambda_handler(event, context):
     # parse information from trigger event
@@ -72,7 +65,6 @@ def lambda_handler(event, context):
     convert_to_mp3(os.path.join(INPUT_DIR, filename), os.path.join(INPUT_DIR, "output.mp3"))
     input_audio_filename = os.path.join(INPUT_DIR, "output.mp3")
     
-    display_contents("/tmp")
     # load audio 
     print(">> Loading audio file...")
     with AudioFile(input_audio_filename).resampled_to(SAMPLE_RATE) as f:
