@@ -64,7 +64,7 @@ def lambda_handler(event, context):
 
     convert_to_mp3(os.path.join(INPUT_DIR, filename), os.path.join(INPUT_DIR, "output.mp3"))
     input_audio_filename = os.path.join(INPUT_DIR, "output.mp3")
-    
+
     # load audio 
     print(">> Loading audio file...")
     with AudioFile(input_audio_filename).resampled_to(SAMPLE_RATE) as f:
@@ -82,7 +82,7 @@ def lambda_handler(event, context):
 
     # write out the processed audio 
     print(">> Writing final output...")
-    output_audio_filename = os.path.join(OUTPUT_DIR, filename) # 'tmp/output/file.mp3'
+    output_audio_filename = os.path.join(OUTPUT_DIR, "output.mp3") # 'tmp/output/file.mp3'
     with AudioFile(output_audio_filename, 'w', SAMPLE_RATE, effected.shape[0]) as f:
         f.write(effected)
     
