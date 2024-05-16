@@ -1,5 +1,6 @@
 import os
 from urllib.parse import unquote_plus
+from pydub import AudioSegment
 
 from pedalboard.io import AudioFile 
 from pedalboard import Pedalboard, PeakFilter, NoiseGate
@@ -9,6 +10,15 @@ INPUT_DIR = os.environ.get("INPUT_DIR", "/tmp/input")
 OUTPUT_DIR = os.environ.get("OUTPUT_DIR", "/tmp/output")
 SAMPLE_RATE = os.environ.get("SAMPLE_RATE", 16000.0)
 OUTPUT_BUCKET = os.environ.get("OUTPUT_BUCKET", "audio-processed-1")
+
+
+
+def convert_to_mp3(input_file, output_file):
+    # Load the audio file
+    audio = AudioSegment.from_file(input_file)
+
+    # Export the audio to MP3 format
+    audio.export(output_file, format="mp3")
 
 
 def download_audio_file(bucket_name, key, audio_file_path):
@@ -52,6 +62,10 @@ def lambda_handler(event, context):
         key,
         input_audio_filename
     )
+
+
+    convert_to_mp3(os.path.join(INPUT_DIR, filename), os.path.join(INPUT_DIR, "ouput.mp3"))
+    input_audio_filename = "output.mp3"
 
     # load audio 
     print(">> Loading audio file...")

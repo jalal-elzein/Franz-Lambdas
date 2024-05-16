@@ -6,7 +6,7 @@ ARG FUNCTION_DIR
 
 COPY lambda_function.py ${FUNCTION_DIR}/lambda_function.py
 
-RUN pip install pedalboard boto3 awslambdaric --no-cache-dir --target ${FUNCTION_DIR}
+RUN pip install pedalboard boto3 awslambdaric pydub --no-cache-dir --target ${FUNCTION_DIR}
 
 FROM python:3.10-slim
 
