@@ -9,8 +9,7 @@ RUN mkdir -p ${FUNCTION_DIR}
 COPY aws_helpers.py ${FUNCTION_DIR}
 COPY midi_program_mapping.py ${FUNCTION_DIR}
 COPY model.py ${FUNCTION_DIR}
-COPY runner.py ${FUNCTION_DIR}
-COPY SGM-v2.01-Sal-Guit-Bass-V1.3.sf2 ${FUNCTION_DIR}
+COPY runner.py ${FUNCTION_DIR}!gsutil -q -m cp gs://magentadata/soundfonts/SGM-v2.01-Sal-Guit-Bass-V1.3.sf2 .
 
 
 # install pip requirements to function_dir 
@@ -28,6 +27,7 @@ RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.
     rm -rf /var/lib/apt/lists/*
 # Download files from Google Cloud Storage
 RUN gsutil -m cp -r gs://mt3/checkpoints ${FUNCTION_DIR}
+RUN gsutil -q -m cp gs://magentadata/soundfonts/SGM-v2.01-Sal-Guit-Bass-V1.3.sf2 .
 
 COPY requirements.txt ${FUNCTION_DIR}
 RUN pip install --no-cache-dir -r ${FUNCTION_DIR}/requirements.txt --target ${FUNCTION_DIR}
