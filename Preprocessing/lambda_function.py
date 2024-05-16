@@ -5,6 +5,7 @@ from pydub import AudioSegment
 from pedalboard.io import AudioFile 
 from pedalboard import Pedalboard, PeakFilter, NoiseGate
 import boto3
+import subprocess
 
 INPUT_DIR = os.environ.get("INPUT_DIR", "/tmp/input")
 OUTPUT_DIR = os.environ.get("OUTPUT_DIR", "/tmp/output")
@@ -14,10 +15,8 @@ OUTPUT_BUCKET = os.environ.get("OUTPUT_BUCKET", "audio-processed-1")
 
 
 def convert_to_mp3(input_file, output_file):
-    # Load the audio file
-    audio = AudioSegment.from_file(input_file)
-
-    audio.export(output_file, format="mp3", codec="libmp3lame")
+    # Run FFmpeg command to convert M4A to MP3
+    subprocess.run(["ffmpeg", "-i", input_file, "-codec:a", "libmp3lame", output_file])
 
 
 def download_audio_file(bucket_name, key, audio_file_path):
