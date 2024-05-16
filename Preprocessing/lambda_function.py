@@ -65,7 +65,7 @@ def lambda_handler(event, context):
 
 
     convert_to_mp3(os.path.join(INPUT_DIR, filename), os.path.join(INPUT_DIR, "ouput.mp3"))
-    input_audio_filename = "output.mp3"
+    input_audio_filename = os.path.join(INPUT_DIR, "output.mp3")
 
     # load audio 
     print(">> Loading audio file...")
