@@ -1,8 +1,9 @@
 import os
-from urllib.parse import unquote_plus
+from urllib.parse import unquote_plus, quote
 import time
 import datetime
 import pickle
+import urllib.parse
 
 import librosa
 import note_seq
@@ -180,12 +181,12 @@ def generate_dynamo_transcription_row(prefix, delimiter, bucket_name, metadata={
     datetime_object = datetime.datetime.fromtimestamp(timestamp)
     date = datetime_object.strftime("%Y-%m-%d")
     return {
-        "acc_id": acc_id,
+        "account_id": acc_id,
         "transcription_id": title,
         "title": song_title,
         "date": date,
         "metadata": metadata,
-        "s3_uri": f"s3://{bucket_name}/{acc_id}/{title}",
+        "s3_bucket": f"https://{quote(bucket_name)}.s3.eu-west-1.amazonaws.com/{quote(prefix)}",
     }
 
 def display_contents(directory):
