@@ -16,8 +16,8 @@ OUTPUT_BUCKET = os.environ.get("OUTPUT_BUCKET", "audio-processed-1")
 def convert_to_mp3(input_file, output_file):
     # Load the audio file
     audio = AudioSegment.from_file(input_file)
-    
-    audio.export(output_file_mp3, format="mp3", codec="libmp3lame")
+
+    audio.export(output_file, format="mp3", codec="libmp3lame")
 
 
 def download_audio_file(bucket_name, key, audio_file_path):
