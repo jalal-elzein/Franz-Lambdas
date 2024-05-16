@@ -16,7 +16,7 @@ WORKDIR ${FUNCTION_DIR}
 
 COPY --from=preproc-build ${FUNCTION_DIR} ${FUNCTION_DIR}
 
-
+RUN apt-get update && apt-get install ffmpeg -y
 
 ENTRYPOINT [ "/usr/local/bin/python", "-m", "awslambdaric" ]
 
