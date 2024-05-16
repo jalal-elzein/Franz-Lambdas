@@ -2,20 +2,23 @@ from __future__ import unicode_literals
 import json
 import os
 import subprocess
-import boto3
-import youtube_dl
 from time import time
 
+import boto3
+import youtube_dl
 
-LOCAL_OUTPUT_FOLDER= "/tmp/outputs"
+
+LOCAL_OUTPUT_FOLDER = os.environ.get("LOCAL_OUTPUT_FOLDER", "/tmp/outputs")
+TARGET_FILE_TYPE = os.environ.get("TARGET_FILE_TYPE", "mp3")
+OUTPUT_BUCKET_NAME = os.environ.get("OUTPUT_BUCKET_NAME", "audio-unprocessed-1")
+FORMAT = os.environ.get("FORMAT", "bestaudio[filesize<10M]")
+DELIMITER = os.environ.get("DELIMITER", "::")
 YTDL_OPTIONS = {
     "noplaylist": "",
-    "format": "bestaudio[filesize<10M]",
+    "format": FORMAT,
     "outtmpl": f"{LOCAL_OUTPUT_FOLDER}/%(title)s-%(channel)s.%(ext)s",
     "cachedir" : "/tmp/youtube-dl-cache"
 }
-target_file_type = "m4a"
-output_bucket_name = "audio-unprocessed-1"
 
 
 def lambda_handler(event, context):
@@ -25,6 +28,7 @@ def lambda_handler(event, context):
         if not os.path.exists(LOCAL_OUTPUT_FOLDER):
             os.makedirs(LOCAL_OUTPUT_FOLDER)
             print(">> Created local output directory")
+
         request_body = event
         youtube_link = request_body['queryStringParameters']['url']
         username = request_body['queryStringParameters']['username']
@@ -32,20 +36,20 @@ def lambda_handler(event, context):
         print(f"youtube_link: {youtube_link}")
         print(f"username: {username}")
         print(f"song_title: {song_title}")
+        
         # download
         print(">> Downloading audio...")
         download_response = download_audio(youtube_link)
         print(download_response)
-        print(f">> Forcing type: {target_file_type}")
-        force_type(LOCAL_OUTPUT_FOLDER, target_file_type)
+        
         # put on s3
         # {bucket_name}/{username}/{song_title}-{timestamp}/{file_name}
         print(">> Uploading outputs to S3")
         upload_response = upload_audio(
-            bucket_name=output_bucket_name, 
-            prefix=f"{username}/{song_title}-{timestamp}", 
+            bucket_name=OUTPUT_BUCKET_NAME, 
+            prefix=f"{username}/{song_title}{DELIMITER}{timestamp}", 
             local_directory=LOCAL_OUTPUT_FOLDER,
-            xtype=target_file_type
+            xtype=TARGET_FILE_TYPE
         )
         return {
             'statusCode': 200,
@@ -95,18 +99,3 @@ def upload_audio(bucket_name, prefix, local_directory, xtype):
                 }
             except Exception as e:
                 print(f"Error uploading {filename}: {e}")
-
-
-def force_type(source_folder, xtype):
-    for filename in os.listdir(source_folder):
-        file_path = os.path.join(source_folder, filename)
-        if os.path.isfile(file_path) and not filename.endswith(f'.{xtype}'):
-            output_file = os.path.splitext(filename)[0] + '.m4a'
-            output_path = os.path.join(source_folder, output_file)
-            try:
-                subprocess.run(['ffmpeg', '-i', file_path, '-c:a', 'aac', '-b:a', '128k', output_path], check=True)
-                print(f"Converted {filename} to {output_file}")
-                os.remove(file_path)
-                print(f"Deleted {filename}")
-            except subprocess.CalledProcessError as e:
-                print(f"Error converting {filename}: {e}")
