@@ -184,7 +184,7 @@ def generate_dynamo_transcription_row(prefix, delimiter, bucket_name, metadata={
         "account_id": acc_id,
         "transcription_id": title,
         "title": song_title,
-        "date": date,
+        "transcription_date": date,
         "metadata": metadata,
         "s3_bucket": f"https://{quote(bucket_name)}.s3.eu-west-1.amazonaws.com/{quote(prefix)}",
     }
